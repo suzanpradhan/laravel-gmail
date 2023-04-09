@@ -23,16 +23,12 @@ trait Configurable
 
 	public function config($string = null)
 	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-
-		if ($disk->exists($file)) {
+		if (session()->has('gmail_session')) {
 			if ($allowJsonEncrypt) {
-				$config = json_decode(decrypt($disk->get($file)), true);
+				$config = decrypt(session('gmail_session'));
 			} else {
-				$config = json_decode($disk->get($file), true);
+				$config = session('gmail_session');
 			}
 
 			if ($string) {
@@ -42,7 +38,6 @@ trait Configurable
 			} else {
 				return $config;
 			}
-
 		}
 
 		return null;
@@ -141,5 +136,4 @@ trait Configurable
 	public abstract function setAccessType($type);
 
 	public abstract function setApprovalPrompt($approval);
-
 }
